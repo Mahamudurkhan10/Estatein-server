@@ -24,18 +24,25 @@ async function run() {
           //     await client.connect();
           const usersCollection = client.db('Estatein').collection('users')
           const propertiesCollection = client.db('Estatein').collection('properties')
-          app.get('/users',async(req,res)=>{
-               const result = await usersCollection.find().toArray()
+          const questionCollection = client.db('Estatein').collection('question')
+        
+          app.get('/question',async(req,res)=>{ 
+               const result = await questionCollection.find().toArray()
                res.send(result)
           })
-          app.get('/properties',async(req,res)=>{
+          app.get('/properties',async(req,res)=>{ 
                const result = await propertiesCollection.find().toArray()
                res.send(result)
           })
-          app.get('/properties/:id', async(req,res)=>{
+          app.get('/property/:id', async(req,res)=>{
                const id = req.params.id
-               const query = { _id : new ObjectId(id) }
+               const query = { _id: new ObjectId(id)};
+               
                const result = await propertiesCollection.findOne(query)
+               res.send(result)
+          }) 
+          app.get('/users',async(req,res)=>{
+               const result = await usersCollection.find().toArray()
                res.send(result)
           })
           app.post('/users',async(req,res)=>{

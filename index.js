@@ -23,9 +23,18 @@ async function run() {
           // Connect the client to the server	(optional starting in v4.7)
           //     await client.connect();
           const usersCollection = client.db('Estatein').collection('users')
+          const propertiesCollection = client.db('Estatein').collection('properties')
           app.get('/users',async(req,res)=>{
                const result = await usersCollection.find().toArray()
                res.send(result)
+          })
+          app.get('/properties',async(req,res)=>{
+               const result = await propertiesCollection.find().toArray()
+               res.send(result)
+          })
+          app.get('/properties/:id', async(req,res)=>{
+               const id = req.params.id
+               const query = {  }
           })
           app.post('/users',async(req,res)=>{
                const user = req.body;

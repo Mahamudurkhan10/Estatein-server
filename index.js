@@ -25,7 +25,12 @@ async function run() {
           const usersCollection = client.db('Estatein').collection('users')
           const propertiesCollection = client.db('Estatein').collection('properties')
           const questionCollection = client.db('Estatein').collection('question')
+          const reviewsCollection = client.db('Estatein').collection('reviews')
         
+          app.get('/reviews',async(req,res)=>{ 
+               const result = await reviewsCollection.find().toArray()
+               res.send(result)
+          })
           app.get('/question',async(req,res)=>{ 
                const result = await questionCollection.find().toArray()
                res.send(result)
@@ -47,6 +52,12 @@ async function run() {
           })
           app.post('/users',async(req,res)=>{
                const user = req.body;
+               const email = req.body.email
+               const query = {email: email}
+               const ExistingUser = await usersCollection.findOne(query)
+               if(ExistingUser){
+                    return res.send({message:"user is already exist",insertedId:null})
+               }
                const result = await usersCollection.insertOne(user)
                res.send(result)
           })

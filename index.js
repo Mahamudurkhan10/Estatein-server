@@ -61,6 +61,20 @@ async function run() {
                const result = await usersCollection.insertOne(user)
                res.send(result)
           })
+          app.get('/api/dashboard', (req, res) => {
+               const data = {
+                 totalUsers: 20,
+                 totalSales: 40,
+                 totalOrders: 10,
+                 chartData: [
+                   { name: 'Total Users', value: 20 },
+                   { name: 'Total Sales', value: 40 },
+                   { name: 'Total Orders', value: 10 }
+                 ]
+               };
+               res.json(data);
+             });
+             
                // Send a ping to confirm a successful connection
                await client.db("admin").command({ ping: 1 });
           console.log("Pinged your deployment. You successfully connected to MongoDB!");

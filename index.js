@@ -61,13 +61,14 @@ async function run() {
                const result = await usersCollection.insertOne(user)
                res.send(result)
           })
-          app.get('/api/dashboard', (req, res) => {
+          app.get('/api/dashboard', async(req, res) => {
+               const totalUsers = await usersCollection.countDocuments()
                const data = {
-                 totalUsers: 20,
+                 totalUsers,
                  totalSales: 40,
                  totalOrders: 10,
                  chartData: [
-                   { name: 'Total Users', value: 20 },
+                   { name: 'Total Users', value: totalUsers },
                    { name: 'Total Sales', value: 40 },
                    { name: 'Total Orders', value: 10 }
                  ]

@@ -95,6 +95,20 @@ async function run() {
                const result = await usersCollection.find().toArray()
                res.send(result)
           })
+          app.patch('/userUpdate/:id',async(req,res)=>{
+               const id = req.params.id;
+               const query = { _id: new ObjectId(id)};
+               const options = {upsert:true}
+               const userRole = req.body;
+             
+               const updated ={
+                    $set:{
+                         role: userRole.role
+                    }
+               }
+               const result = await usersCollection.updateOne(query,updated,options)
+               res.send(result)
+          })
           app.post('/users', async (req, res) => {
                const user = req.body;
                const email = req.body.email

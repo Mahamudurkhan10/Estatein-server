@@ -51,6 +51,13 @@ async function run() {
                const result = await propertiesCollection.findOne(query)
                res.send(result)
           }) 
+          app.get('/propertyDelete/:id', async(req,res)=>{
+               const id = req.params.id
+               const query = { _id: new ObjectId(id)};
+               
+               const result = await propertiesCollection.deleteOne(query)
+               res.send(result)
+          }) 
           app.get('/users',async(req,res)=>{
                const result = await usersCollection.find().toArray()
                res.send(result)

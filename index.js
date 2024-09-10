@@ -39,6 +39,11 @@ async function run() {
                const result = await propertiesCollection.find().toArray()
                res.send(result)
           })
+          app.post('/properties', async(req,res)=>{
+               const body = req.body;
+               const result = await propertiesCollection.insertOne(body)
+               res.send(result)
+          })
           app.get('/property/:id', async(req,res)=>{
                const id = req.params.id
                const query = { _id: new ObjectId(id)};
@@ -63,14 +68,18 @@ async function run() {
           })
           app.get('/api/dashboard', async(req, res) => {
                const totalUsers = await usersCollection.countDocuments()
+               const totalProperties = await propertiesCollection.countDocuments()
                const data = {
                  totalUsers,
-                 totalSales: 40,
+                 totalSales: 5,
                  totalOrders: 10,
+                 totalProperties,
                  chartData: [
                    { name: 'Total Users', value: totalUsers },
-                   { name: 'Total Sales', value: 40 },
-                   { name: 'Total Orders', value: 10 }
+                   { name: 'Total Sales', value: 5 },
+                   { name: 'Total Orders', value: 10 },
+                   { name: 'Total Properties', value: totalProperties },
+
                  ]
                };
                res.json(data);

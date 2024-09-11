@@ -26,7 +26,16 @@ async function run() {
           const propertiesCollection = client.db('Estatein').collection('properties')
           const questionCollection = client.db('Estatein').collection('question')
           const reviewsCollection = client.db('Estatein').collection('reviews')
+          const makeOrderCollection = client.db('Estatein').collection('makeOrder')
+          app.get('makeOrder',async(req,res)=>{
 
+          })
+          app.post('makeOrder',async(req,res)=>{
+
+               const query = req.body
+               const result = await makeOrderCollection.insertOne(query)
+               res.send(result)
+          })
           app.get('/reviews', async (req, res) => {
                const result = await reviewsCollection.find().toArray()
                res.send(result)

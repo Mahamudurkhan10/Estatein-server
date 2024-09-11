@@ -28,7 +28,8 @@ async function run() {
           const reviewsCollection = client.db('Estatein').collection('reviews')
           const makeOrderCollection = client.db('Estatein').collection('makeOrder')
           app.get('makeOrder',async(req,res)=>{
-
+            const result = await makeOrderCollection.find().toArray()
+            res.send(result)
           })
           app.post('makeOrder',async(req,res)=>{
 

@@ -27,13 +27,39 @@ async function run() {
           const questionCollection = client.db('Estatein').collection('question')
           const reviewsCollection = client.db('Estatein').collection('reviews')
           const makeOrderCollection = client.db('Estatein').collection('makeOrder')
-          app.get('makeOrder',async(req,res)=>{
+          const addCardCollection = client.db('Estatein').collection('addCard')
+          app.get('/addCard/:email',async(req,res)=>{
+             const email = req.params.email;
+            
+             const query = {email:email}
+            const result = await addCardCollection.find(query).toArray()
+            res.send(result)
+          })
+          app.post('/addCard',async(req,res)=>{
+
+               const property = req.body;
+               const id = req.body.id
+               const email = req.body.email
+               const query = { id: id , email: email }
+               const ExistingUser = await addCardCollection.findOne(query)
+               if (ExistingUser) {
+                    return res.send({ message: "property is already exist", insertedId: null })
+               }
+               const result = await addCardCollection.insertOne(property)
+               res.send(result)
+          })
+          app.get('/addCard',async(req,res)=>{
+            const result = await addCardCollection.find().toArray()
+            res.send(result)
+          })
+          app.get('/makeOrder',async(req,res)=>{
             const result = await makeOrderCollection.find().toArray()
             res.send(result)
           })
-          app.post('makeOrder',async(req,res)=>{
+          app.post('/makeOrder',async(req,res)=>{
 
                const query = req.body
+               console.log(query);
                const result = await makeOrderCollection.insertOne(query)
                res.send(result)
           })

@@ -35,6 +35,13 @@ async function run() {
             const result = await addCardCollection.find(query).toArray()
             res.send(result)
           })
+          app.delete('/addCard/:id',async(req,res)=>{
+             const id = req.params.id;
+            
+             const query = { _id: new ObjectId(id) };
+            const result = await addCardCollection.deleteOne(query)
+            res.send(result)
+          })
           app.post('/addCard',async(req,res)=>{
 
                const property = req.body;
@@ -56,6 +63,13 @@ async function run() {
             const result = await makeOrderCollection.find().toArray()
             res.send(result)
           })
+          app.get('/makeOrder/:email',async(req,res)=>{
+               const email = req.params.email;
+              
+               const query = {email:email}
+              const result = await makeOrderCollection.find(query).toArray()
+              res.send(result)
+            })
           app.post('/makeOrder',async(req,res)=>{
 
                const query = req.body
@@ -137,6 +151,12 @@ async function run() {
                const result = await usersCollection.deleteOne(query)
                res.send(result)
           })
+          app.get('/users/:email',async(req,res)=>{
+               const email = req.params.email;
+               const query = { email: email};
+               const result = await usersCollection.findOne(query)
+               res.send(result)
+          })
           app.patch('/userUpdate/:id',async(req,res)=>{
                const id = req.params.id;
                const query = { _id: new ObjectId(id)};
@@ -165,15 +185,16 @@ async function run() {
           app.get('/api/dashboard', async (req, res) => {
                const totalUsers = await usersCollection.countDocuments()
                const totalProperties = await propertiesCollection.countDocuments()
+               const totalOrders = await makeOrderCollection.countDocuments()
                const data = {
                     totalUsers,
                     totalSales: 5,
-                    totalOrders: 10,
+                    totalOrders,
                     totalProperties,
                     chartData: [
                          { name: 'Total Users', value: totalUsers },
                          { name: 'Total Sales', value: 5 },
-                         { name: 'Total Orders', value: 10 },
+                         { name: 'Total Orders', value: totalOrders},
                          { name: 'Total Properties', value: totalProperties },
 
                     ]

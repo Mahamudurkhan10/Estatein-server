@@ -30,7 +30,17 @@ async function run() {
     const reviewsCollection = db.collection('reviews');
     const makeOrderCollection = db.collection('makeOrder');
     const addCardCollection = db.collection('addCard');
-
+    const priceOrderCollection = db.collection('priceOrder');
+    app.get('/priceOrder', async(req,res)=>{
+      const result = await priceOrderCollection.find().toArray()
+      res.send(result)
+    })
+    app.post('/priceOrder', async (req, res) => {
+      const query = req.body;
+       
+      const result = await priceOrderCollection.insertOne(query);
+      res.send(result);
+    });
     // Properties with search and filters
     app.get('/properties', async (req, res) => {
       try {
@@ -127,6 +137,7 @@ async function run() {
 
     app.post('/makeOrder', async (req, res) => {
       const query = req.body;
+      
       const result = await makeOrderCollection.insertOne(query);
       res.send(result);
     });

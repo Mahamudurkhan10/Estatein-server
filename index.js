@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
-
+const stripe = require('stripe')(process.env.STRIPE_ENV_KEY)
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -31,6 +31,26 @@ async function run() {
     const makeOrderCollection = db.collection('makeOrder');
     const addCardCollection = db.collection('addCard');
     const priceOrderCollection = db.collection('priceOrder');
+    const paymentCollection = db.collection('payments')
+    app.post('/create-payment-intent', async (req, res) => {
+      const { price } = req.body;
+      const amount = parseInt(price * 100);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret
+      })
+    })
+    app.post('/payments', async (req, res) => {
+      const payment = req.body;
+      const paymentResult = await paymentCollection.insertOne(payment)
+      res.send(paymentResult)
+
+    })
     app.get('/priceOrder', async(req,res)=>{
       const result = await priceOrderCollection.find().toArray()
       res.send(result)

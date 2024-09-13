@@ -47,7 +47,20 @@ async function run() {
     })
     app.post('/payments', async (req, res) => {
       const payment = req.body;
+      const id = req.body.id;
+      const email = req.body.email;
+      const query = { id: id, email: email };
+      const ExistingPayment = await paymentCardCollection.findOne(query);
+      if (payment) {
+        return res.send({ message: "payment  is already done..", insertedId: null });
+      }
       const paymentResult = await paymentCollection.insertOne(payment)
+      res.send(paymentResult)
+
+    })
+    app.get('/payments', async (req, res) => {
+    
+      const paymentResult = await paymentCollection.find().toArray()
       res.send(paymentResult)
 
     })
@@ -117,6 +130,12 @@ async function run() {
       const result = await addCardCollection.find(query).toArray();
       res.send(result);
     });
+    app.get('/addCards/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = {_id:new ObjectId(id) };
+      const result = await addCardCollection.findOne(query);
+      res.send(result);
+    });
 
     app.delete('/addCard/:id', async (req, res) => {
       const id = req.params.id;
@@ -130,8 +149,8 @@ async function run() {
       const id = req.body.id;
       const email = req.body.email;
       const query = { id: id, email: email };
-      const ExistingUser = await addCardCollection.findOne(query);
-      if (ExistingUser) {
+      const existCard = await addCardCollection.findOne(query);
+      if (existCard) {
         return res.send({ message: "property is already exist", insertedId: null });
       }
       const result = await addCardCollection.insertOne(property);

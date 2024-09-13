@@ -50,8 +50,8 @@ async function run() {
       const id = req.body.id;
       const email = req.body.email;
       const query = { id: id, email: email };
-      const ExistingPayment = await paymentCardCollection.findOne(query);
-      if (payment) {
+      const ExistingPayment = await paymentCollection.findOne(query);
+      if (ExistingPayment) {
         return res.send({ message: "payment  is already done..", insertedId: null });
       }
       const paymentResult = await paymentCollection.insertOne(payment)

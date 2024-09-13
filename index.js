@@ -68,6 +68,12 @@ async function run() {
       const result = await priceOrderCollection.find().toArray()
       res.send(result)
     })
+    app.get('/priceOrder/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await priceOrderCollection.find(query).toArray();
+      res.send(result);
+    });
     app.post('/priceOrder', async (req, res) => {
       const query = req.body;
        
@@ -293,15 +299,16 @@ async function run() {
     app.get('/api/dashboard', async (req, res) => {
       const totalUsers = await usersCollection.countDocuments();
       const totalProperties = await propertiesCollection.countDocuments();
-      const totalOrders = await makeOrderCollection.countDocuments();
+      const totalOrders = await makeOrderCollection.countDocuments()
+      const totalSales = await paymentCollection.countDocuments()
       const data = {
         totalUsers,
-        totalSales: 5,
+        totalSales,
         totalOrders,
         totalProperties,
         chartData: [
           { name: 'Total Users', value: totalUsers },
-          { name: 'Total Sales', value: 5 },
+          { name: 'Total Sales', value: totalSales },
           { name: 'Total Orders', value: totalOrders },
           { name: 'Total Properties', value: totalProperties }
         ]

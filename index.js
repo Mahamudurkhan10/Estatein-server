@@ -35,7 +35,7 @@ async function run() {
     app.post('/jwt', async (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-      
+
       res.send({ token });
     })
     const verifyToken = (req, res, next) => {
@@ -51,17 +51,16 @@ async function run() {
         req.decoded = decoded;
         next()
       })
-      const verifyAdmin = async (req, res, next) => {
-        const email = req.decoded.email
-        const query = { email: email }
-        const user = await usersCollection.findOne(query);
-        const isAdmin = user?.role === "admin"
-        if (!isAdmin) {
-          return res.status(403).send({ message: 'forbidden access' })
-        }
-        next()
+    }
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email
+      const query = { email: email }
+      const user = await usersCollection.findOne(query);
+      const isAdmin = user?.role === "admin"
+      if (!isAdmin) {
+        return res.status(403).send({ message: 'forbidden access' })
       }
-
+      next()
     }
     app.post('/create-payment-intent', async (req, res) => {
       const { price } = req.body;
@@ -90,12 +89,12 @@ async function run() {
 
     })
     app.get('/payments', async (req, res) => {
-    
+
       const paymentResult = await paymentCollection.find().toArray()
       res.send(paymentResult)
 
     })
-    app.get('/priceOrder', async(req,res)=>{
+    app.get('/priceOrder', async (req, res) => {
       const result = await priceOrderCollection.find().toArray()
       res.send(result)
     })
@@ -107,7 +106,7 @@ async function run() {
     });
     app.post('/priceOrder', async (req, res) => {
       const query = req.body;
-       
+
       const result = await priceOrderCollection.insertOne(query);
       res.send(result);
     });
@@ -115,8 +114,8 @@ async function run() {
     app.get('/properties', async (req, res) => {
       try {
         const { location, propertyType, priceRange, size, buildYear, search } = req.query;
-        
-        
+
+
 
         // Create filter object for MongoDB query
         let filter = {};
@@ -134,7 +133,7 @@ async function run() {
         if (size) {
           const [minSize, maxSize] = size.split('-');
           filter.property_size = { $gte: minSize, $lte: maxSize };
-         
+
         }
         if (buildYear) {
           const [minYear, maxYear] = buildYear.split('-').map(Number);
@@ -169,7 +168,7 @@ async function run() {
     });
     app.get('/addCards/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id:new ObjectId(id) };
+      const query = { _id: new ObjectId(id) };
       const result = await addCardCollection.findOne(query);
       res.send(result);
     });
@@ -213,7 +212,7 @@ async function run() {
 
     app.post('/makeOrder', async (req, res) => {
       const query = req.body;
-      
+
       const result = await makeOrderCollection.insertOne(query);
       res.send(result);
     });
@@ -248,7 +247,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch('/propertyUpdate/:id', async (req, res) => {
+    app.patch('/propertyUpdate/:id',verifyToken,verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const options = { upsert: true };
@@ -275,7 +274,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete('/propertyDelete/:id', async (req, res) => {
+    app.delete('/propertyDelete/:id',verifyToken,verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await propertiesCollection.deleteOne(query);
@@ -287,7 +286,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete('/userDelete/:id', async (req, res) => {
+    app.delete('/userDelete/:id',verifyAdmin,verifyToken, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await usersCollection.deleteOne(query);
@@ -326,8 +325,21 @@ async function run() {
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
+    app.get('/users/admin/:email', verifyToken, verifyAdmin, async (req, res) => {
+      const email = req.params.email;
 
-    app.get('/api/dashboard', async (req, res) => {
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: 'forbidden access ' })
+      }
+      const query = { email: email };
+      const user = await usersCollection.findOne(query)
+      let admin = false;
+      if (user) {
+        admin = user?.role == 'admin';
+      }
+      res.send({ admin })
+    })
+    app.get('/api/dashboard',verifyToken,verifyAdmin, async (req, res) => {
       const totalUsers = await usersCollection.countDocuments();
       const totalProperties = await propertiesCollection.countDocuments();
       const totalOrders = await makeOrderCollection.countDocuments()

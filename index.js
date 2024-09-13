@@ -22,7 +22,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
     const db = client.db('Estatein');
     const propertiesCollection = db.collection('properties');
     const usersCollection = db.collection('users');
@@ -110,8 +110,12 @@ async function run() {
       const result = await priceOrderCollection.insertOne(query);
       res.send(result);
     });
+    app.get('/properties',async(req,res)=>{
+      const result = await propertiesCollection.find().toArray()
+      res.send(result)
+    })
     // Properties with search and filters
-    app.get('/properties', async (req, res) => {
+    app.get('/property', async (req, res) => {
       try {
         const { location, propertyType, priceRange, size, buildYear, search } = req.query;
 

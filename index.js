@@ -290,7 +290,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete('/userDelete/:id',verifyAdmin,verifyToken, async (req, res) => {
+    app.delete('/userDelete/:id',async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await usersCollection.deleteOne(query);
